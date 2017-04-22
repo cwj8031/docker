@@ -1,0 +1,61 @@
+1、老版本的移除
+sudo yum remove docker \
+                  docker-common \
+                  container-selinux \
+                  docker-selinux \
+                  docker-engine
+
+2、创建docker repo：
+yum install -y yum-utils
+
+yum-config-manager     --add-repo     https://download.docker.com/linux/centos/docker-ce.repo
+
+yum-config-manager --enable docker-ce-edge
+yum list docker-ce.x86_64  --showduplicates |sort -r
+yum install docker-ce.x86_64
+
+3、开始docker：
+docker run hello-world
+
+4、unistall  docker
+yum remove docker-ce
+rm -rf /var/lib/docker
+
+5、查看有几个容器：
+docker ps -a
+
+6、尝试搭建一个简单的wordpress：
+分别拉去docker镜像：
+docker  pull  mysql
+doocker pull  wordpress
+
+7、启动
+启动的mysql的命令：
+$ docker run --name mysql_wordpress -e MYSQL_ROOT_PASSWORD=wordpress  -d  mysql  
+
+
+$ docker run --name docker_wordpress --link mysql_wordpress:mysql -p 8080:80 -d wordpress  
+接下来就可以在浏览器中输入http://localhost:8080进行wordpress的配置了。
+
+sudo docker run --name some-wordpress --link some-mysql:mysql -d wordpress  
+  启动 WordPress 容器时可以指定的一些环境参数包括  
+    
+      -e WORDPRESS_DB_USER=... 缺省为 “root”  
+      -e WORDPRESS_DB_PASSWORD=... 缺省为连接 mysql 容器的环境变量 MYSQL_ROOT_PASSWORD 的值  
+      -e WORDPRESS_DB_NAME=... 缺省为 “wordpress”  
+
+或者yml文件：
+  wordpress:  
+      image: "wordpress:latest"  
+      ports:  
+          - "8080:80"  
+      links:  
+          - db:mysql  
+    
+  db:  
+      image: "mysql:latest"  
+      expose:  
+          - "3306"  
+      environment:  
+          - MYSQL_ROOT_PASSWORD=wordpress 
+
